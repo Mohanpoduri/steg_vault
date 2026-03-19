@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* Hero Landing Styling */
+.hero-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.landing-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    text-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+    margin-bottom: 1.5rem;
+    animation: glowText 3s infinite alternate;
+}
+@keyframes glowText {
+    0% { text-shadow: 0 0 10px rgba(0, 255, 157, 0.4); }
+    100% { text-shadow: 0 0 30px rgba(0, 255, 157, 0.8), 0 0 10px rgba(0, 255, 157, 0.5); }
+}
+.landing-subtitle {
+    font-size: 1.35rem;
+    color: #a0aec0;
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+    font-weight: 300;
+    line-height: 1.6;
+}
+.feature-card {
+    background: rgba(5, 15, 10, 0.4);
+    border: 1px solid rgba(0, 255, 157, 0.2);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+.feature-card:hover {
+    transform: translateY(-8px);
+    border-color: #00FF9D;
+    box-shadow: 0 10px 30px rgba(0, 255, 157, 0.15);
+}
+.feature-icon {
+    font-size: 2.5rem;
+    color: #00FF9D;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 8px rgba(0,255,157,0.5));
+}
+.cta-button {
+    font-size: 1.25rem;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 25px rgba(0, 255, 157, 0.3);
+}
+</style>
+
+<div class="container py-5">
+    <div class="hero-wrapper flex-column mb-5 hero-fade-in">
+        <h1 class="landing-title text-white">STEG_VAULT</h1>
+        <p class="landing-subtitle">
+            An advanced cryptographic environment engineered for absolute data privacy. Unseen, untraceable, and unbreakable. We embed military-grade AES-256 encrypted payloads deep within the hexadecimal structures of Images, Audio, and Video files.
+        </p>
+
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-cyan cta-button hero-fade-in" style="animation-delay: 0.2s;">
+                <i class="bi bi-door-open-fill me-2"></i> ENTER VAULT
+            </a>
+        {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-outline-cyan cta-button hero-fade-in" style="animation-delay: 0.2s;">
+                <i class="bi bi-shield-lock-fill me-2"></i> INITIALIZE CONNECTION
+            </a>
+            <p class="mt-3 text-muted hero-fade-in" style="animation-delay: 0.3s; font-size: 0.9rem;">
+                Already have an access node? <a href="{{ url_for('login') }}" class="text-secondary text-decoration-none border-bottom border-secondary">Authenticate</a>
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4 hero-fade-in" style="animation-delay: 0.4s;">
+            <div class="feature-card text-center">
+                <i class="bi bi-file-earmark-lock feature-icon"></i>
+                <h4 class="text-white mb-3">Multi-Media LSB Parsing</h4>
+                <p class="text-muted small mb-0">Embed your hidden messages seamlessly into PNG/JPG matrices, WAV audio frequencies, or heavily append them to MP4 video wrappers without corrupting the host file.</p>
+            </div>
+        </div>
+        <div class="col-md-4 hero-fade-in" style="animation-delay: 0.5s;">
+            <div class="feature-card text-center">
+                <i class="bi bi-key feature-icon"></i>
+                <h4 class="text-white mb-3">Zlib & AES-256 Armor</h4>
+                <p class="text-muted small mb-0">Before any data touches a pixel, it goes through intense Python Zlib deflation to minimize byte size, followed by symmetric AES-256 encryption ensuring brute-force resistance.</p>
+            </div>
+        </div>
+        <div class="col-md-4 hero-fade-in" style="animation-delay: 0.6s;">
+            <div class="feature-card text-center">
+                <i class="bi bi-radar feature-icon"></i>
+                <h4 class="text-white mb-3">Computer Vision Forensics</h4>
+                <p class="text-muted small mb-0">Use the built-in OpenCV detection maps (Canny, Sobel, Prewitt) to optically analyze image arrays and investigate suspected carrier files for visual anomalies and hidden noise.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Initial Staggered Animations
+    $('.hero-fade-in').css({opacity: 0, transform: 'translateY(20px)'});
+    setTimeout(() => {
+        $('.hero-fade-in').each(function(index) {
+            $(this).delay(index * 150).animate({opacity: 1}, {
+                duration: 800,
+                step: function(now, fx) {
+                    if (fx.prop === 'opacity') {
+                        let y = 20 * (1 - now);
+                        $(this).css('transform', `translateY(${y}px)`);
+                    }
+                }
+            });
+        });
+    }, 100);
+});
+</script>
+{% endblock %}

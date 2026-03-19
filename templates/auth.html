@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-md-5">
+        <div class="card premium-card border-cyan">
+            <div class="card-header bg-darker text-cyan border-bottom border-cyan">
+                <h4 class="mb-0 text-center">
+                    {% if is_register %}
+                        <i class="bi bi-person-plus"></i> Initialize Agent
+                    {% else %}
+                        <i class="bi bi-shield-lock"></i> Identify
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body bg-card">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-cyan">Username</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="username" name="username" required autocomplete="off">
+                    </div>
+                    {% if is_register %}
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-cyan">Communication Email (Optional)</label>
+                        <input type="email" class="form-control bg-dark text-light border-secondary" id="email" name="email" autocomplete="off" placeholder="agent@network.host">
+                    </div>
+                    {% endif %}
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-cyan">Passphrase</label>
+                        <input type="password" class="form-control bg-dark text-light border-secondary" id="password" name="password" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-outline-cyan fw-bold">
+                            {% if is_register %}
+                                REGISTER
+                            {% else %}
+                                AUTHENTICATE
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-darker border-top border-cyan text-center">
+                {% if is_register %}
+                    <small class="text-muted">Already have clearance?</small> <a href="{{ url_for('login') }}" class="text-info text-decoration-none">Login</a>
+                {% else %}
+                    <small class="text-muted">Need clearance?</small> <a href="{{ url_for('register') }}" class="text-info text-decoration-none">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

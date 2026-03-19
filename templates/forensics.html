@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-cyan fw-bold mb-4 border-bottom border-cyan pb-2 d-flex align-items-center">
+    <i class="bi bi-eye fs-3 me-2 text-primary pulse-icon"></i> Visual Forensics & Steganalysis
+</h2>
+
+<div class="card premium-card border-secondary mb-5 shadow page-transition-enter">
+    <div class="card-header bg-darker text-light border-bottom border-secondary d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-search"></i> MEDIA INSPECTION</h5>
+        <span class="badge bg-warning text-dark shadow-sm">MODE: ANALYZE</span>
+    </div>
+    <div class="card-body bg-card">
+        <form id="forensicsForm" enctype="multipart/form-data">
+
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <label class="form-label text-cyan fw-bold">Target Suspect Media</label>
+                    <input type="file" id="forensicFile" name="file" class="form-control" accept="image/png, image/jpeg, audio/wav, video/mp4, video/avi" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-cyan fw-bold">Anomaly Extraction Operator</label>
+                    <select id="forensicOperator" name="operator" class="form-select">
+                        <option value="canny">Canny (High-frequency Variance)</option>
+                        <option value="sobel">Sobel (Directional Discrepancy)</option>
+                        <option value="prewitt">Prewitt (Mathematical Convolution)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-grid mb-4">
+                <button type="submit" id="analyzeBtn" class="btn btn-outline-warning fw-bold position-relative btn-lg shadow">
+                    <i class="bi bi-radar btn-text me-2"></i><span class="btn-text">RUN FORENSIC ANALYSIS</span>
+                    <span class="spinner-border spinner-border-sm position-absolute top-50 start-50 translate-middle d-none text-warning" role="status" id="analyzeSpinner"></span>
+                </button>
+            </div>
+            
+        </form>
+
+        <hr class="border-secondary my-4">
+
+        <!-- Result Visualizer: Side-by-side -->
+        <h5 class="text-light mb-3"><i class="bi bi-display"></i> Optical Comparison Array</h5>
+        <div class="row g-4 d-none" id="forensicResultsContainer">
+            <div class="col-md-6 text-center">
+                <h6 class="text-muted fw-bold mb-2">ORIGINAL FILE INPUT</h6>
+                <div class="border border-secondary rounded p-2 border-dashed bg-darker d-flex align-items-center justify-content-center" style="min-height: 250px;">
+                    <img id="forensicOriginalPreview" src="" class="img-fluid rounded d-none" style="max-height: 400px;">
+                    <div id="forensicOriginalIcon" class="text-secondary d-none"></div>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <h6 class="text-cyan fw-bold mb-2">EDGE ANOMALY MAP</h6>
+                <div class="border border-cyan rounded p-2 bg-darker shadow-lg" style="box-shadow: 0 0 15px rgba(0,216,255,0.2);">
+                    <img id="forensicResultPreview" src="" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
+                <a id="forensicDownloadBtn" href="#" class="btn btn-sm btn-outline-cyan mt-3"><i class="bi bi-download"></i> Download Filtered Image</a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

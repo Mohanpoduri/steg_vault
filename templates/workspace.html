@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-cyan fw-bold mb-4 border-bottom border-cyan pb-2 d-flex align-items-center">
+    <i class="bi bi-cpu fs-3 me-2 text-primary pulse-icon"></i> Secure Intercept Workspace
+</h2>
+
+<!-- Content Type Toggles -->
+<div class="d-flex justify-content-center mb-5 mt-3">
+    <div class="btn-group shadow-lg" role="group" aria-label="Media Type">
+        <input type="radio" class="btn-check media-toggle" name="mediaType" id="mediaImage" value="image" autocomplete="off" checked>
+        <label class="btn btn-outline-cyan fw-bold px-4 rounded-start-pill" for="mediaImage"><i class="bi bi-image"></i> IMAGE LSB</label>
+
+        <input type="radio" class="btn-check media-toggle" name="mediaType" id="mediaAudio" value="audio" autocomplete="off">
+        <label class="btn btn-outline-cyan fw-bold px-4" for="mediaAudio"><i class="bi bi-soundwave"></i> AUDIO LSB</label>
+
+        <input type="radio" class="btn-check media-toggle" name="mediaType" id="mediaVideo" value="video" autocomplete="off">
+        <label class="btn btn-outline-cyan fw-bold px-4 rounded-end-pill" for="mediaVideo"><i class="bi bi-camera-video"></i> VIDEO APPEND</label>
+    </div>
+</div>
+
+<!-- Main Workspace Columns -->
+<div class="row g-4 page-transition-enter">
+    <!-- Encoding Panel (Left) -->
+    <div class="col-lg-6">
+        <div class="card premium-card border-secondary h-100 shadow">
+            <div class="card-header bg-darker text-cyan border-bottom border-secondary d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-lock"></i> ENCRYPT & EMBED</h5>
+                <span class="badge bg-success shadow-sm">MODE: WRITE</span>
+            </div>
+            <div class="card-body bg-card">
+                <form id="encodeForm" enctype="multipart/form-data">
+                    <input type="hidden" name="media_type" id="encodeMediaType" value="image">
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div id="encodeDropZone" class="border-dashed p-4 text-center mb-4 rounded position-relative d-flex justify-content-center align-items-center" style="min-height: 180px; overflow: hidden;">
+                        <input type="file" id="encodeFile" name="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/png, image/jpeg" style="cursor: pointer; z-index: 5;">
+                        
+                        <div id="encodePreviewContainer" class="d-none w-100 h-100 text-center position-relative" style="z-index: 2;">
+                            <img id="encodeImagePreview" src="" class="img-fluid rounded d-none shadow" style="max-height: 140px; object-fit: contain;">
+                            <div id="encodeIconPreview" class="d-none display-1 text-cyan drop-shadow"><i class="bi bi-file-earmark-music"></i></div>
+                            <p class="mt-2 mb-0 small text-light font-monospace" id="encodeFilename" style="text-shadow: 0 0 5px #000;"></p>
+                        </div>
+
+                        <div id="encodeDropPrompt" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0" style="z-index: 1;">
+                            <h1 class="display-5 text-cyan mb-2 drop-shadow"><i class="bi bi-cloud-arrow-up-fill" id="encodePromptIcon"></i></h1>
+                            <p class="mb-0 text-light fw-semibold" id="encodePromptText">Drop Image (PNG/JPG)</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Spectrogram Dashboard (Hidden default) -->
+                    <div id="encodeAudioVisualizer" class="mb-3 d-none border border-cyan rounded bg-darker p-2">
+                        <div class="d-flex justify-content-between text-cyan small fw-bold mb-1">
+                            <span><i class="bi bi-activity"></i> Raw Waveform Tracker</span>
+                            <span id="encodeAudioTime">0:00</span>
+                        </div>
+                        <canvas id="encodeWaveform" width="400" height="80" class="w-100 rounded" style="background:#0b0f19;"></canvas>
+                        <audio id="encodeAudioPlayer" controls class="w-100 mt-2 d-none"></audio>
+                    </div>
+
+                    <!-- Capacity Meter -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-muted small mb-1">
+                            <span class="fw-bold text-light">Capacity Filter</span>
+                            <span id="capacityLabel" class="font-monospace text-cyan fw-bold drop-shadow">0 / 0 Chars</span>
+                        </div>
+                        <div class="progress shadow-sm" style="height: 12px; background-color: rgba(31, 41, 55, 0.8); border: 1px solid rgba(0,216,255,0.2); border-radius: 6px;">
+                            <div id="capacityMeter" class="progress-bar progress-bar-striped progress-bar-animated bg-cyan" role="progressbar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Secret Text Input -->
+                    <div class="mb-3 position-relative">
+                        <label for="secretText" class="form-label text-cyan fw-bold"><i class="bi bi-textarea-t"></i> Secret Payload</label>
+                        <textarea class="form-control border-cyan font-monospace shadow-sm" id="secretText" name="secret_text" rows="4" placeholder="Enter confidential transmission..." required></textarea>
+                    </div>
+
+                    <!-- AES Key Input -->
+                    <div class="mb-4">
+                        <label for="encodeAesKey" class="form-label text-cyan fw-bold"><i class="bi bi-key-fill"></i> AES-256 Protocol Key</label>
+                        <input type="password" class="form-control border-cyan font-monospace shadow-sm" id="encodeAesKey" name="aes_key" placeholder="Initialize passkey..." required>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid mt-auto">
+                        <button type="submit" id="encodeBtn" class="btn btn-outline-cyan fw-bold position-relative btn-lg shadow">
+                            <i class="bi bi-shield-lock-fill btn-text me-2"></i><span class="btn-text">EMBED SECURELY</span>
+                            <span class="spinner-border spinner-border-sm position-absolute top-50 start-50 translate-middle d-none text-cyan" role="status" aria-hidden="true" id="encodeSpinner"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decoding Panel (Right) -->
+    <div class="col-lg-6">
+        <div class="card premium-card border-secondary h-100 shadow">
+            <div class="card-header bg-darker border-bottom border-cyan d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-cyan"><i class="bi bi-unlock"></i> DECRYPT & EXTRACT</h5>
+                <span class="badge bg-primary shadow-sm" style="background-color: #008855 !important;">MODE: READ</span>
+            </div>
+            <div class="card-body bg-card">
+                <form id="decodeForm" enctype="multipart/form-data">
+                    <input type="hidden" name="media_type" id="decodeMediaType" value="image">
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div id="decodeDropZone" class="border-dashed p-4 text-center mb-4 rounded position-relative d-flex justify-content-center align-items-center" style="min-height: 180px; overflow: hidden; border-color: rgba(108, 117, 125, 0.5);">
+                        <input type="file" id="decodeFile" name="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/png" style="cursor: pointer; z-index: 5;">
+                        
+                        <div id="decodePreviewContainer" class="d-none w-100 h-100 text-center position-relative" style="z-index: 2;">
+                            <img id="decodeImagePreview" src="" class="img-fluid rounded d-none shadow" style="max-height: 140px; object-fit: contain;">
+                            <div id="decodeIconPreview" class="d-none display-1 text-light drop-shadow"><i class="bi bi-file-earmark-music"></i></div>
+                            <p class="mt-2 mb-0 small text-light font-monospace" id="decodeFilename" style="text-shadow: 0 0 5px #000;"></p>
+                        </div>
+
+                        <div id="decodeDropPrompt" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0" style="z-index: 1;">
+                            <h1 class="display-5 text-cyan mb-2 drop-shadow"><i class="bi bi-file-earmark-lock2-fill" id="decodePromptIcon"></i></h1>
+                            <p class="mb-0 text-light fw-semibold" id="decodePromptText">Drop Encoded Image to Audit (.png)</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Spectrogram Dashboard (Hidden default) -->
+                    <div id="decodeAudioVisualizer" class="mb-3 d-none border border-cyan rounded bg-darker p-2">
+                        <div class="d-flex justify-content-between text-cyan small fw-bold mb-1">
+                            <span><i class="bi bi-activity"></i> Encrypted Waveform</span>
+                            <span id="decodeAudioTime">0:00</span>
+                        </div>
+                        <canvas id="decodeWaveform" width="400" height="80" class="w-100 rounded" style="background:#0b0f19;"></canvas>
+                        <audio id="decodeAudioPlayer" controls class="w-100 mt-2 d-none"></audio>
+                    </div>
+
+                    <!-- AES Key Input -->
+                    <div class="mb-4">
+                        <label for="decodeAesKey" class="form-label fw-bold text-cyan"><i class="bi bi-key-fill"></i> Decryption Protocol Key</label>
+                        <input type="password" class="form-control border-cyan font-monospace shadow-sm" id="decodeAesKey" name="aes_key" placeholder="Enter passkey to unlock..." required>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid mb-4">
+                        <button type="submit" id="decodeBtn" class="btn btn-outline-cyan fw-bold position-relative btn-lg shadow">
+                            <i class="bi bi-unlock-fill btn-text me-2"></i><span class="btn-text">AUDIT & EXTRACT</span>
+                            <span class="spinner-border spinner-border-sm position-absolute top-50 start-50 translate-middle d-none text-cyan" role="status" aria-hidden="true" id="decodeSpinner"></span>
+                        </button>
+                    </div>
+
+                    <!-- Extracted Text Area -->
+                    <div class="mb-3">
+                        <label for="extractedText" class="form-label fw-bold text-success drop-shadow"><i class="bi bi-envelope-open-fill"></i> Recovered Data Stream</label>
+                        <textarea class="form-control border-success font-monospace shadow-sm" style="background-color: rgba(25, 135, 84, 0.1); color: #20c997; box-shadow: 0 0 10px rgba(40,167,69,0.2) inset;" id="extractedText" rows="4" readonly placeholder="Secure decryption output stream..."></textarea>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

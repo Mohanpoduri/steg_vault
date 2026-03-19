@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-cyan fw-bold mb-4 border-bottom border-cyan pb-2"><i class="bi bi-person-lines-fill"></i> User Profile Matrix</h2>
+
+<div class="row">
+    <div class="col-md-8 col-lg-6">
+        <div class="card premium-card border-secondary bg-card shadow-lg page-transition-enter">
+            <div class="card-header bg-darker border-bottom border-secondary py-3">
+                <h5 class="mb-0 text-white"><i class="bi bi-sliders"></i> Access Node Configurations</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="mb-4">
+                        <label class="form-label text-cyan fw-bold small text-uppercase" style="letter-spacing: 1px;">System Alias / Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-darker border-secondary text-cyan"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" name="username" value="{{ current_user.username }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-cyan fw-bold small text-uppercase" style="letter-spacing: 1px;">Secure Comm Channel (Email)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-darker border-secondary text-cyan"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" name="email" value="{{ current_user.email or '' }}" placeholder="Enter operational email address...">
+                        </div>
+                        <div class="form-text text-muted small mt-1">Providing an email allows for external communication routes.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-cyan fw-bold small text-uppercase" style="letter-spacing: 1px;">Node Creation Timestamp</label>
+                        <input type="text" class="form-control bg-darker border-secondary text-muted" value="{{ current_user.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}" disabled>
+                    </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-outline-cyan fw-bold px-4 py-2 shadow border-cyan rounded-pill">
+                            <i class="bi bi-save me-2"></i> UPDATE MATRIX
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted text-decoration-none">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
