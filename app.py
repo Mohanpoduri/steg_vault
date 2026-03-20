@@ -68,7 +68,14 @@ class VaultLog(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    user = User.query.get(int(user_id))
+    # Vercel Stateless Fix: If session cookie is valid but DB wiped, resurrect user.
+    if not user and os.environ.get('VERCEL') == '1':
+        user = User(id=int(user_id), username=f"Agent_{user_id}", password_hash="skipped")
+        db.session.add(user)
+        try: db.session.commit()
+        except: db.session.rollback()
+    return user
 
 def get_fernet_key(password: str) -> bytes:
     hashed_password = hashlib.sha256(password.encode()).digest()
@@ -263,6 +270,17 @@ def index():
 def login():
     if request.method == 'POST':
         user = User.query.filter_by(username=request.form.get('username')).first()
+        
+        # Vercel Stateless Fix: If node changed and registration lost, auto-register them
+        if not user and os.environ.get('VERCEL') == '1':
+            user = User(
+                username=request.form.get('username'), 
+                password_hash=generate_password_hash(request.form.get('password'))
+            )
+            db.session.add(user)
+            try: db.session.commit()
+            except: db.session.rollback()
+
         if user and check_password_hash(user.password_hash, request.form.get('password')):
             login_user(user)
             return redirect(url_for('dashboard'))
