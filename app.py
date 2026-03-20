@@ -26,10 +26,17 @@ load_dotenv()
 app = Flask(__name__)
 # Read from .env explicitly for WSGI architectures (e.g. Render)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_local_vault_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:///steg_vault.db')
+
+if os.environ.get('VERCEL') == '1':
+    db_path = os.path.join('/tmp', 'steg_vault.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', f'sqlite:///{db_path}')
+    TEMP_VAULT = os.path.join('/tmp', 'temp_vault')
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:///steg_vault.db')
+    TEMP_VAULT = os.path.join(app.root_path, 'static', 'temp_vault')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-TEMP_VAULT = os.path.join(app.root_path, 'static', 'temp_vault')
 os.makedirs(TEMP_VAULT, exist_ok=True)
 
 # Rate Limiter configured per IP
@@ -243,6 +250,9 @@ def trigger_steag(file_path, original_filename, media_type, secret_text, aes_key
     ))
     db.session.commit()
     return output_filename
+
+with app.app_context():
+    db.create_all()
 
 # --- FLASK ROUTES ---
 @app.route('/')
